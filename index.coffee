@@ -29,7 +29,7 @@ for file in files
 
 	posts = source.split "--------\n"
 	for post in posts
-		
+
 		sections = post.split "-----\n"
 		continue if sections.length < 3
 
@@ -48,7 +48,7 @@ for file in files
 				index = meta.categories.indexOf category
 				meta.categories.splice index, 1 if index > -1
 				meta.categories[method] category
-			
+
 			switch name
 				when "AUTHOR"
 					meta.author = value
@@ -58,7 +58,8 @@ for file in files
 					else
 						meta.title = value
 				when "BASENAME"
-					meta.slug = value.replace /_/g, "-"
+					temp = value.replace /\//g, "-"
+					meta.slug = temp.replace /_/g, "-"
 				when "STATUS"
 					meta.published = value is "Publish"
 				when "DATE"
@@ -72,11 +73,11 @@ for file in files
 					addCategory "unshift", value
 				when "CATEGORY"
 					addCategory "push", value
+				when "IMAGE"
+					meta.image = value
 
 		markdown = toMarkdown body
 
 		filename = path.join (if meta.published then _posts else _drafts), "#{meta.date.format "YYYY-MM-DD"}-#{meta.slug}.md"
 		compiled = eco.render template, {meta, body, markdown}
 		fs.writeFileSync filename, compiled
-
-
